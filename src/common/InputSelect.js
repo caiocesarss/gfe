@@ -53,7 +53,8 @@ export default props => {
         <MenuItem value="">
           <em> </em>
         </MenuItem>
-        {props.selectItems.map(item => {
+        {props.selectItems != undefined && 
+        props.selectItems.map(item => {
           return (
             <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
           )

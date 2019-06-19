@@ -12,44 +12,52 @@ import InputSelect from '../../common/InputSelect';
 import { getParties, getPartyAccounts } from './SalesOrdersActions';
 
 class AddPartyArray extends Component {
-
-  componentWillMount() {
-
-    //this.props.getParties();
-    this.props.getParties();
-    this.props.getPartyAccounts()
+  state = {
+    selectPartyAccounts: [],
   }
 
-  // getPartyAccounts(party_id){
-  //  this.props.getPartyAccounts(party_id)
-  // }
+  componentWillMount() {
+    this.props.getParties();
+    let tempList = this.state.selectPartyAccounts;
+    tempList.push([])
+    this.setState({ selectPartyAccounts: tempList });
+  }
+
+  getPartyAccounts(party_id, index) {
+    this.props.getPartyAccounts({ party_id });
+    setTimeout(function () {
+      const tempList = this.state.selectPartyAccounts.slice();
+      const newItem = this.props.salePartyAccountList;
+      tempList[index] = newItem;
+      this.setState({ selectPartyAccounts: tempList });
+    }.bind(this), 1000)
+  }
+
+  addNew() {
+    this.props.fields.push({});
+    let tempList = this.state.selectPartyAccounts;
+    tempList.push([])
+    this.setState({ selectPartyAccounts: tempList });
+  }
+
+  removeOne(index) {
+    console.log(this.props.fields);
+    let tempList = this.state.selectPartyAccounts;
+    tempList.splice(index, 1);
+    this.setState({ selectPartyAccounts: tempList });
+    this.props.fields.remove(index);
+    console.log(this.state.selectPartyAccounts);
+    console.log(this.props.fields);
+  }
 
   render() {
-    //  const selectPartyItems = [{name: 'caio', id: 1}]
-
-
     const { forwardedRef, fields, meta: { error, submitFailed }, ...props } = this.props;
-    //const selectParties = [];
-    //const selectPartyItems = [];
-    //const selectParties = this.props.partyList;
-    //      const selectPartyItems = selectParties.map(item => {
-    //          return ({name: item.name, id: item.party_id})
-    //    }) || [];
+    const { selectPartyAccounts } = this.state;
 
-
-
-    //const selectPartyAccounts = [];
-    //const selectPartyAccountItems = [];
-    //const selectPartyAccounts = this.props.partyAccountList;
-    //const selectPartyAccountItems = selectPartyAccounts.map(item => {
-    //   const name = `${item.alias_name} - ${item.city_name}/${item.uf} - ${item.doc_value}`
-    //   return ({name: name, id: item.party_account_id})
-    //}) || [];
-    const selectPartyAccounts = [];
     return (
       <Grid item xs={12} md={12}>
         <br />
-        <Fab onClick={() => fields.push({})} size="small" color="primary" aria-label="Add" >
+        <Fab onClick={() => this.addNew()} size="small" color="primary" aria-label="Add" >
           <AddIcon />
         </Fab>&nbsp;
        <br /><br />
@@ -62,11 +70,6 @@ class AddPartyArray extends Component {
             return ({ name: item.name, id: item.party_id })
           }) || [];
 
-
-          selectPartyAccounts[index + 1] = this.props.salePartyAccountList;
-          console.log(index);
-          console.log(selectPartyAccounts[index + 1]);
-
           return (
             <Grid item xs={12} md={12} key={index}>
               <Grid container spacing={1}>
@@ -78,6 +81,7 @@ class AddPartyArray extends Component {
                     selectItems={selectPartyItems}
                     label={`Cliente #${index + 1}`}
                     inputProps={{ name: `${member}.party_id` }}
+                    onChange={(e) => this.getPartyAccounts(e.target.value, index)}
                   />
                 </Grid>
                 <Grid item xs={12} md={4}>
@@ -85,7 +89,7 @@ class AddPartyArray extends Component {
                     name={`${member}.party_account_id`}
                     selectField={{ fullWidth: true }}
                     component={InputSelect}
-                    selectItems={selectPartyAccounts[index + 1].map(item => {
+                    selectItems={selectPartyAccounts.length != 0 && selectPartyAccounts[index].map(item => {
                       const name = `${item.alias_name} - ${item.city_name}/${item.uf} - ${item.doc_value}`
                       return ({ name: name, id: item.party_account_id })
                     })}
@@ -95,7 +99,7 @@ class AddPartyArray extends Component {
                   />
                 </Grid>
                 <Grid item xs={12} md={5}>
-                  <Fab onClick={() => fields.remove(index)} size="small" color="secondary" aria-label="Add" >
+                  <Fab onClick={() => this.removeOne(index)} size="small" color="secondary" aria-label="Add" >
                     <DeleteIcon />
                   </Fab>
                 </Grid>
