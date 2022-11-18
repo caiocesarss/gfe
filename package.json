@@ -18,7 +18,7 @@
     "react-redux-toastr": "^7.5.1",
     "react-router-dom": "^5.0.1",
     "react-router-redux": "^4.0.8",
-    "react-scripts": "3.0.1",
+    "react-scripts": "5.0.1",
     "react-text-mask": "^5.4.3",
     "redux": "^4.0.1",
     "redux-form": "^8.2.3",
